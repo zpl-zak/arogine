@@ -60,6 +60,7 @@ add_definitions(
 add_executable(arogine 
 	src/main.cpp
 	src/voxel.cpp
+	src/Camera.cpp
 
 	common/shader.cpp
 

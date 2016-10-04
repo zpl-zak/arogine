@@ -40,6 +40,12 @@ void Voxel::SetColor(glm::vec3 color)
 	_color = color;
 }
 
+void Voxel::Plot(glm::vec3 position, glm::vec3 scale)
+{
+	SetIdentity();
+	_modelMatrix = translate(position * (scale * vec3(2.f))) * glm::scale(scale);
+}
+
 void Voxel::RenderVoxel()
 {
 	glEnableVertexAttribArray(0);

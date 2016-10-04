@@ -1,4 +1,4 @@
-// /*
+﻿// /*
 //  Copyright 2016 AROGAN Group
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -10,21 +10,30 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // */
+#pragma once
 
-// Include standard headers
-#include <stdio.h>
-#include <stdlib.h>
-#include <thread>
+#include "defs.hpp"
+#include "Window.h"
+#include "Camera.h"
+#include "ShaderHandler.h"
+#include "VoxelScene.h"
 
-// Include GLEW
-#include <GL/glew.h>
+class System
+{
+public:
+	System();
 
-// Include GLFW
-#include <glfw3.h>
-#include <common/shader.hpp>
+	void BeginFrame(float deltaTime);
+	void EndFrame(vec3 lightDir, vec3 lightColor);
 
-// Include GLM
-#include <glm/glm.hpp>
-#include <glm/gtx/transform.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-using namespace glm;
+	Window *GetWindow() { return &_window; }
+	VoxelScene *GetVoxelScene() { return &_voxelScene; }
+	ShaderHandler *GetShaderHandler() { return &_shaderHandler; }
+	Camera *GetCamera() { return &_camera; }
+
+private:
+	Window _window;
+	Camera _camera;
+	ShaderHandler _shaderHandler;
+	VoxelScene _voxelScene;
+};

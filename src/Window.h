@@ -1,4 +1,4 @@
-// /*
+﻿// /*
 //  Copyright 2016 AROGAN Group
 //  Licensed under the Apache License, Version 2.0 (the "License");
 //  you may not use this file except in compliance with the License.
@@ -10,21 +10,18 @@
 //  See the License for the specific language governing permissions and
 //  limitations under the License.
 // */
+#pragma once
 
-// Include standard headers
-#include <stdio.h>
-#include <stdlib.h>
-#include <thread>
+#include "defs.hpp"
 
-// Include GLEW
-#include <GL/glew.h>
+class Window
+{
+public:
+	Window();
 
-// Include GLFW
-#include <glfw3.h>
-#include <common/shader.hpp>
+	void Update() const;
+	GLFWwindow *GetWindow();
 
-// Include GLM
-#include <glm/glm.hpp>
-#include <glm/gtx/transform.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-using namespace glm;
+private:
+	GLFWwindow *_window;
+};

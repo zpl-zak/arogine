@@ -25,6 +25,7 @@ public:
 	void SetScale(glm::vec3 scale);
 	void SetIdentity();
 	void SetColor(glm::vec3 color);
+	void Plot(glm::vec3 position, glm::vec3 scale);
 
 	static void RenderVoxel();
 
