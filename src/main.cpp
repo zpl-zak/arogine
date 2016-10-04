@@ -74,13 +74,19 @@ int main( void )
 
 	Camera cam(vec3(0, 0, 0), vec2(3.14f, 0.f));
 
-	Voxel voxels[100][100];
+	Voxel*** voxels = new Voxel**[100];
 	for(size_t i=0; i<100;i++)
 	{
+		voxels[i] = new Voxel*[100];
 		for(size_t j=0; j<100;j++)
 		{
-			voxels[i][j].SetPosition(vec3(i*2, 0, j*2));
-			voxels[i][j].SetColor(vec3(i, j, 0));
+			voxels[i][j] = new Voxel[100];
+			for(size_t k=0; k<100;k++)
+			{
+				voxels[i][j][k].SetPosition(vec3(i * .02f, k * .02f, j * .02f));
+				voxels[i][j][k].SetScale(vec3(.01f,.01f,.01f));
+				voxels[i][j][k].SetColor(vec3(i, j, k));
+			}
 		}
 	}
 
@@ -92,10 +98,21 @@ int main( void )
 	GLuint lnID = glGetUniformLocation(programID, "LIT");
 	GLuint lcID = glGetUniformLocation(programID, "LIC");
 
+	int nbFrames = 0;
+	double lastframeshot = glfwGetTime();
+
 	do{
 		float currentTime = static_cast<float>(glfwGetTime());
 		deltaTime = lastTime - currentTime;
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
+		nbFrames++;
+		if (currentTime - lastframeshot >= 1.0) { // If last prinf() was more than 1 sec ago
+											 // printf and reset timer
+			printf("%f ms/frame\n", 1000.0 / double(nbFrames));
+			nbFrames = 0;
+			lastframeshot += 1.0;
+		}
 
 		cam.HandleInput(window, deltaTime);
 
@@ -108,34 +125,43 @@ int main( void )
 		{
 			for(size_t j=0; j<100;j++)
 			{
-				mat4 modelMatrix = voxels[i][j].GetModelMatrix();
-				vec3 modelColor = voxels[i][j].GetColor();
+				//float im = (sin(abs(sin(currentTime))*i/2.f)+cos(currentTime))/10.f;
+				float im = cos(i*j);
+				float angle = (currentTime)*20.f;
+				for(size_t k=0; k<1;k++)
+				{
+					float s = sin(radians(angle));
+					float c = cos(radians(angle));
+					float x = i*.02f;
+					float y = j*.02f;
+					float o = 49.f*.02f;
 
-				mat4 mvp = mv * modelMatrix;
+					float xpos = c * (x - o) - s * (y - o) + o;
+					float ypos = s * (x - o) + c * (y - o) + o;
 
-				glUseProgram(programID);
-				glUniformMatrix4fv(mmID, 1, GL_FALSE, &modelMatrix[0][0]);
-				glUniformMatrix4fv(mvID, 1, GL_FALSE, &cam.GetViewMatrix()[0][0]);
-				glUniformMatrix4fv(mpID, 1, GL_FALSE, &cam.GetProjectionMatrix()[0][0]);
-				glUniformMatrix4fv(mID, 1, GL_FALSE, &mvp[0][0]);
-				glUniform3fv(cID, 1, &modelColor[0]);
-				glUniform3fv(lnID, 1, &lightVec[0]);
-				glUniform3fv(lcID, 1, &lightColor[0]);
+					voxels[i][j][k].SetIdentity();
+					voxels[i][j][k].SetPosition(vec3(xpos, 0.f, ypos));
+					voxels[i][j][k].SetScale(vec3(.01f, .01f, .01f));
 
-				glEnableVertexAttribArray(0);
-				glBindBuffer(GL_ARRAY_BUFFER, Voxel::vb);
-				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, static_cast<void*>(nullptr));
+					voxels[i][j][k].SetColor(vec3(abs(cos(i)), abs(sin(i)), abs(tan(i))));
 
-				glEnableVertexAttribArray(1);
-				glBindBuffer(GL_ARRAY_BUFFER, Voxel::nb);
-				glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, static_cast<void*>(nullptr));
+					mat4 modelMatrix = voxels[i][j][k].GetModelMatrix();// * glm::rotate(angle, vec3(1,0,0));
+					vec3 modelColor = voxels[i][j][k].GetColor();
 
-				glDrawArrays(GL_TRIANGLES, 0, 12 * 3);
+					mat4 mvp = mv * modelMatrix;
 
-				glDisableVertexAttribArray(1);
-				glDisableVertexAttribArray(0);
+					glUseProgram(programID);
+					glUniformMatrix4fv(mmID, 1, GL_FALSE, &modelMatrix[0][0]);
+					glUniformMatrix4fv(mvID, 1, GL_FALSE, &cam.GetViewMatrix()[0][0]);
+					glUniformMatrix4fv(mpID, 1, GL_FALSE, &cam.GetProjectionMatrix()[0][0]);
+					glUniformMatrix4fv(mID, 1, GL_FALSE, &mvp[0][0]);
+					glUniform3fv(cID, 1, &modelColor[0]);
+					glUniform3fv(lnID, 1, &lightVec[0]);
+					glUniform3fv(lcID, 1, &lightColor[0]);
+
+					Voxel::RenderVoxel();
+				}
 			}
-			
 		}
 		
 		// Swap buffers

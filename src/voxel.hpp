@@ -19,20 +19,24 @@ class Voxel
 {
 public:
 	Voxel(){}
-	Voxel(glm::vec3 position, glm::vec3 color);
+	Voxel(glm::vec3 position, glm::vec3 scale, glm::vec3 color);
 	
 	void SetPosition(glm::vec3 position);
+	void SetScale(glm::vec3 scale);
+	void SetIdentity();
 	void SetColor(glm::vec3 color);
+
+	static void RenderVoxel();
 
 	glm::mat4 GetModelMatrix() const;
 	glm::vec3 GetColor() const;
 
-	static GLuint vao, vb, nb;
+	static GLuint vao, vb, nb, eb;
 	static void BuildVoxelData();
 private:
 	glm::mat4 _modelMatrix;
 	glm::vec3 _color;
 
+	static const unsigned int Voxel::voxelIndices[];
 	static const GLfloat voxelData[];
-	
 };

@@ -59,6 +59,12 @@ add_definitions(
 # Executable
 add_executable(arogine 
 	src/main.cpp
+	src/voxel.cpp
+
+	common/shader.cpp
+
+	src/shader/simple.vs
+	src/shader/simple.fs
 )
 target_link_libraries(arogine
 	${ALL_LIBS}
@@ -74,7 +80,7 @@ SOURCE_GROUP(shaders REGULAR_EXPRESSION ".*/.*shader$" )
 if (NOT ${CMAKE_GENERATOR} MATCHES "Xcode" )
 add_custom_command(
    TARGET arogine POST_BUILD
-   COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/src${CMAKE_EXECUTABLE_SUFFIX}" "${CMAKE_CURRENT_SOURCE_DIR}/src/"
+   COMMAND ${CMAKE_COMMAND} -E copy "${CMAKE_CURRENT_BINARY_DIR}/${CMAKE_CFG_INTDIR}/arogine${CMAKE_EXECUTABLE_SUFFIX}" "${CMAKE_CURRENT_SOURCE_DIR}/src/"
 )
 elseif (${CMAKE_GENERATOR} MATCHES "Xcode" )
 
