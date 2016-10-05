@@ -61,8 +61,13 @@ add_executable(arogine
 	src/main.cpp
 	src/voxel.cpp
 	src/Camera.cpp
+	src/System.cpp
+	src/ShaderHandler.cpp
+	src/VoxelScene.cpp
+	src/Window.cpp
 
 	common/shader.cpp
+	common/VoxelImage.cpp
 
 	src/shader/simple.vs
 	src/shader/simple.fs
