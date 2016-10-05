@@ -2,11 +2,11 @@
 
 layout(location = 0) in vec3 vert;
 layout(location = 1) in vec3 norm;
+layout(location = 2) in mat4 M;
+layout(location = 6) in vec3 COL;
 
-uniform mat4 M;
 uniform mat4 V;
 uniform mat4 P;
-uniform vec3 COL;
 uniform vec3 LIT;
 uniform vec3 LIC;
 

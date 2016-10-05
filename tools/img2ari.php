@@ -18,7 +18,7 @@ fwrite($handle, pack("I",$height));
 
 for ($x = 0; $x < $width; $x++) {
     for ($y = 0; $y < $height; $y++) {
-        $rgb = imagecolorat($im, $x, $y);
+        $rgb = imagecolorat($im, $x, $height-$y-1);
         $r = ($rgb >> 16) & 0xFF;
         $g = ($rgb >> 8) & 0xFF;
         $b = $rgb & 0xFF;

@@ -29,10 +29,11 @@ int main( void )
 	int nbFrames = 0;
 	double lastframeshot = glfwGetTime();
 
-	size_t pw=0, ph=0;
-	size_t size = 0;
+	size_t pw=0, ph=0, pw2=0, ph2=0;
+	size_t size = 0, size2=0;
 
-	float *pixels = VoxelImage::DownloadImage(size, "test.png.ari", pw, ph);
+	float *pixels = VoxelImage::DownloadImage(size, "doom.png.ari", pw, ph);
+	float *pixels2 = VoxelImage::DownloadImage(size2, "doom2.png.ari", pw2, ph2);
 
 	size_t m = size;
 	Voxel *voxels = new Voxel[m];
@@ -44,12 +45,13 @@ int main( void )
 			float r = pixels[q];
 			float g = pixels[q + 1];
 			float b = pixels[q + 2];
-			voxels[k].Plot(vec3(i, .0f, j), vec3(.1f));
+			float intensity = sqrtf(r*r + g*g + b*b);
+			voxels[k].Plot(vec3(i, 0, j), vec3(.01f));
 			voxels[k].SetColor(vec3(r, g, b));
 			k++;
 		}
 	}
-	free(pixels);
+	//free(pixels);
 	sys.GetVoxelScene()->UploadVoxelPointer((Voxel*)voxels, m);
 
 	do{
@@ -65,12 +67,30 @@ int main( void )
 			lastframeshot += 1.0;
 		}
 
-		vec3 lightVec(1, 1, 1);
+		vec3 lightVec(-1, 1, 1);
 		vec3 lightColor(1, 1, 1);
 
 		sys.BeginFrame(deltaTime);
 		{
+			vec3 *col = sys.GetVoxelScene()->UnlockColormap();
+			q = 0;
+			for(size_t i =0;i<sys.GetVoxelScene()->GetVoxelCount();i++,q+=3)
+			{
+				float r = pixels[q];
+				float g = pixels[q + 1];
+				float b = pixels[q + 2];
+				float r2 = pixels2[q];
+				float g2 = pixels2[q + 1];
+				float b2 = pixels2[q + 2];
+				float t = abs(cos(currentTime));
 
+				float rf = (r + t*(r2 - r));
+				float gf = (g + t*(g2 - g));
+				float bf = (b + t*(b2 - b));
+
+				col[i] = vec3(rf,gf,bf);
+			}
+			sys.GetVoxelScene()->LockColormap();
 		}
 		sys.EndFrame(lightVec, lightColor);
 
@@ -83,6 +103,8 @@ int main( void )
 	glfwTerminate();
 
 	delete[] voxels;
+	free(pixels);
+	free(pixels2);
 
 	return 0;
 }

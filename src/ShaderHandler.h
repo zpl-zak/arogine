@@ -20,14 +20,13 @@ public:
 	ShaderHandler();
 
 	GLuint GetProgram() const;
-	void Publish(mat4 m, mat4 v, mat4 p, vec3 col, vec3 lit, vec3 lic) const;
+	void Publish(mat4 v, mat4 p, vec3 lit, vec3 lic) const;
 	
 private:
 	GLuint _program;
 	GLuint mmID;
 	GLuint mvID;
 	GLuint mpID;
-	GLuint cID;
 	GLuint lnID;
 	GLuint lcID;
 };

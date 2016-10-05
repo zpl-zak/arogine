@@ -24,9 +24,27 @@ public:
 	VoxelScene(System * system);
 	void UploadVoxelPointer(Voxel voxelPtr[], size_t voxelCount);
 	void RenderVoxelScene(vec3 lightDir, vec3 lightColor) const;
+	size_t GetVoxelCount() const { return _voxelc; }
+	
+	mat4 *UnlockScene(bool writeOnly=true);
+	void LockScene();
+
+	vec3 *UnlockColormap(bool writeOnly=true);
+	void LockColormap();
 
 private:
 	Voxel* _voxels;
 	size_t _voxelc;
 	System * _sys;
+	mat4 *_modelMatrices;
+	vec3 *_modelColors;
+
+	GLuint mb, cb;
+
+public:
+	static void SetPosition(mat4* _modelMatrix, glm::vec3 position);
+	static void SetScale(mat4* _modelMatrix, glm::vec3 scale);
+	static void SetIdentity(mat4* _modelMatrix);
+	static void SetColor(vec3 *_color, glm::vec3 color);
+	static void Plot(mat4* _modelMatrix, glm::vec3 position, glm::vec3 scale);
 };

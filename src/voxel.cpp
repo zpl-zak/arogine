@@ -48,21 +48,7 @@ void Voxel::Plot(glm::vec3 position, glm::vec3 scale)
 
 void Voxel::RenderVoxel()
 {
-	glEnableVertexAttribArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, Voxel::vb);
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, static_cast<void*>(nullptr));
-
-	glEnableVertexAttribArray(1);
-	glBindBuffer(GL_ARRAY_BUFFER, Voxel::nb);
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, static_cast<void*>(nullptr));
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eb);
-
-	glDrawArrays(GL_TRIANGLES, 0, 12 * 3);
-	//glDrawElements(GL_TRIANGLES, sizeof(unsigned int) * 36, GL_UNSIGNED_INT, static_cast<void*>(nullptr));
-
-	glDisableVertexAttribArray(1);
-	glDisableVertexAttribArray(0);
+	
 }
 
 
