@@ -15,5 +15,5 @@ void System::EndFrame(vec3 lightDir, vec3 lightColor)
 {
 	
 	_voxelScene.RenderVoxelScene(lightDir, lightColor);
-	_window.Update();
+	
 }

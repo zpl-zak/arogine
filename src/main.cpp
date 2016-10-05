@@ -15,9 +15,28 @@
 #include "defs.hpp"
 #include "common/shader.hpp"
 #include "common/VoxelImage.h"
+#include "common/text2D.hpp"
 
 // Include interns
 #include "System.h"
+
+#ifdef LINUX
+#include <unistd.h>
+#endif
+#ifdef WINDOWS
+#include <windows.h>
+#endif
+
+void mySleep(int sleepMs)
+{
+#ifdef LINUX
+	usleep(sleepMs * 1000);   // usleep takes sleep time in us (1 millionth of a second)
+#endif
+#ifdef WINDOWS
+	Sleep(sleepMs);
+#endif
+}
+
 
 float deltaTime = 0;
 float lastTime = 0;
@@ -29,8 +48,13 @@ int main( void )
 	int nbFrames = 0;
 	double lastframeshot = glfwGetTime();
 
+	initText2D("Holstein.dds");
+
 	size_t pw=0, ph=0, pw2=0, ph2=0;
 	size_t size = 0, size2=0;
+
+	int windoww = 0.f, windowh = 0.f;
+	glfwGetWindowSize(sys.GetWindow()->GetWindow(), &windoww, &windowh);
 
 	float *pixels = VoxelImage::DownloadImage(size, "doom.png.ari", pw, ph);
 	float *pixels2 = VoxelImage::DownloadImage(size2, "doom2.png.ari", pw2, ph2);
@@ -54,17 +78,20 @@ int main( void )
 	//free(pixels);
 	sys.GetVoxelScene()->UploadVoxelPointer((Voxel*)voxels, m);
 
+	float fmr = .1f;
 	do{
 		float currentTime = static_cast<float>(glfwGetTime());
 		deltaTime = lastTime - currentTime;
 		
-
 		nbFrames++;
-		if (currentTime - lastframeshot >= 1.0) { // If last prinf() was more than 1 sec ago
-											 // printf and reset timer
-			printf("%f ms/frame (%f FPS)\n", 1000.0 / double(nbFrames), double(nbFrames));
+		bool odd = (currentTime - lastframeshot) >= .1f;
+		if (odd) { // If last prinf() was more than 1 sec ago
+				   // printf and reset timer
+
+
+			fmr = double(nbFrames);
 			nbFrames = 0;
-			lastframeshot += 1.0;
+			lastframeshot += .1f;
 		}
 
 		vec3 lightVec(-1, 1, 1);
@@ -92,7 +119,18 @@ int main( void )
 			}
 			sys.GetVoxelScene()->LockColormap();
 		}
+		
 		sys.EndFrame(lightVec, lightColor);
+
+		glDisable(GL_DEPTH_TEST);
+		static char buf[999] = {};
+		sprintf(buf, "%f ms/frame (%f FPS)\n", fmr, 1000.0f / fmr);
+		printText2D(buf, 10, 10, 12);
+		glEnable(GL_DEPTH_TEST);
+
+		sys.GetWindow()->Update();
+
+		mySleep(50);
 
 		lastTime = currentTime;
 	} // Check if the ESC key was pressed or the window was closed

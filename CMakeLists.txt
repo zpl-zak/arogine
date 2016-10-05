@@ -68,9 +68,13 @@ add_executable(arogine
 
 	common/shader.cpp
 	common/VoxelImage.cpp
+	common/text2D.cpp
+	common/texture.cpp
 
 	src/shader/simple.vs
 	src/shader/simple.fs
+	src/shader/TextVertexShader.fragmentshader
+	src/shader/TextVertexShader.vertexshader
 )
 target_link_libraries(arogine
 	${ALL_LIBS}
