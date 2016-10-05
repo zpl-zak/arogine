@@ -15,5 +15,5 @@ void main() {
 	float cosT = clamp(dot(n,l),0,1);
 
 	vec3 ambient = vec3(0.1,0.1,0.1) * voxcolor;
-	color = ambient + voxcolor * lightcolor * cosT;
+	color = ambient + voxcolor * lightcolor;
 }

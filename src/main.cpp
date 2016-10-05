@@ -14,6 +14,7 @@
 // Include commons
 #include "defs.hpp"
 #include "common/shader.hpp"
+#include "common/VoxelImage.h"
 
 // Include interns
 #include "System.h"
@@ -28,19 +29,27 @@ int main( void )
 	int nbFrames = 0;
 	double lastframeshot = glfwGetTime();
 
-	size_t m = 1000;
+	size_t pw=0, ph=0;
+	size_t size = 0;
+
+	float *pixels = VoxelImage::DownloadImage(size, "test.png.ari", pw, ph);
+
+	size_t m = size;
 	Voxel *voxels = new Voxel[m];
-	for(size_t k = 0; k<10; k++)
+	size_t k = 0,q=0;
+	for(size_t i = 0; i<pw;i++)
 	{
-		for(size_t j = 0; j < 10;j++)
+		for(size_t j = 0; j<ph;j++, q += 3)
 		{
-			for(size_t i=0;i<10; i++)
-			{
-				voxels[i + 10 * (j + 10 * k)].Plot(vec3(i, k, j), vec3(.1f));
-				voxels[i + 10 * (j + 10 * k)].SetColor(vec3(k, j, i));
-			}
+			float r = pixels[q];
+			float g = pixels[q + 1];
+			float b = pixels[q + 2];
+			voxels[k].Plot(vec3(i, .0f, j), vec3(.1f));
+			voxels[k].SetColor(vec3(r, g, b));
+			k++;
 		}
 	}
+	free(pixels);
 	sys.GetVoxelScene()->UploadVoxelPointer((Voxel*)voxels, m);
 
 	do{
@@ -61,34 +70,7 @@ int main( void )
 
 		sys.BeginFrame(deltaTime);
 		{
-			size_t Idx = 0;
-			for (size_t k = 0; k<10; k++)
-			{
 
-				for (size_t j = 0; j < 10; j++)
-				{
-					float angle = (currentTime)*20.f;
-					float s = sin(radians(angle));
-					float c = cos(radians(angle));
-					float x = j;
-					float y = k;
-					float o = 49.f;
-					//float im = (sin(abs(sin(currentTime))*i/2.f)+cos(currentTime))/10.f;
-					float im = 0.f;// x*x + 0.3f * x + 0.12f;
-					float xpos = c * (x - o) - s * (y - o) + o;
-					float ypos = s * (x - o) + c * (y - o) + o;
-					float x2 = xpos - o;
-					float y2 = ypos - o;
-					for (size_t i = 0; i<1; i++)
-					{
-						
-						voxels[i + 10 * (j + 10 * k)].Plot(vec3(xpos, k, ypos), vec3(.01f));
-						voxels[i + 10 * (j + 10 * k)].SetColor(vec3(k, j, i));
-					}
-					Idx++;
-				}
-
-			}
 		}
 		sys.EndFrame(lightVec, lightColor);
 
