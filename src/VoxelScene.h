@@ -17,34 +17,76 @@
 
 class System;
 
+/**
+ * \class VoxelScene
+ * \brief Batch voxel renderer
+ * 
+ * This class handles uploading an array of pre-defined voxels to the GPU.
+ * It also takes care of updating your shader program with updated uniforms.
+ * Renderer binds buffers and calls instanced draw on GPU.
+ * There are also static method helpers for manipulating unlocked voxels.
+ * 
+ * \note Class should not access System object, it should access shader and camera objects directly.
+ */
 class VoxelScene
 {
 public:
 	VoxelScene(){}
 	VoxelScene(System * system);
-	void UploadVoxelPointer(Voxel voxelPtr[], size_t voxelCount);
-	void RenderVoxelScene(vec3 lightDir, vec3 lightColor) const;
-	size_t GetVoxelCount() const { return _voxelc; }
-	
-	mat4 *UnlockScene(bool writeOnly=true);
-	void LockScene();
 
-	vec3 *UnlockColormap(bool writeOnly=true);
+	/** 
+	 * \brief Upload voxel array to the GPU.
+	 * \param voxelPtr Pointer to an array of voxels.
+	 * \param voxelCount Number of voxels passed to the GPU.
+	 *  
+	 * Method generates new buffers and uploads a sequence of voxel properties to the GPU.
+	 */
+	void UploadVoxelPointer(const Voxel* voxelPtr, size_t voxelCount);
+
+	/** 
+	 * \brief Invoke render commands.
+	 * \param lightDir The direction of light passed to the shader program.
+	 * \param lightColor The color of light passed to the shader program.
+	 *  
+	 * \note Get rid of parameters and introduce a better way to access light properties.
+	 *  
+	 * Method publishes updated uniforms to the shader program and maps buffers to the shader inputs.
+	 * It then invokes render command, which produces instanced meshes.
+	 */
+	void RenderVoxelScene() const;
+
+	size_t GetVoxelCount() const { return mVoxelCount; }
+	
+	/**
+	 * \brief Unlocks an access to the uploaded voxel array properties.
+	 * \param writeOnly (Optional) Decides whether to ask the GPU for copying video memory to system, therefore allowing us to read data from GPU.
+	 * 
+	 * Calls map buffer command which returns a pointer to a memory region representing our uploaded data.
+	 */
+	mat4 *UnlockScene(bool writeOnly=true) const;
+	static void LockScene();
+
+	/**
+	* \brief Unlocks an access to the uploaded voxel color properties.
+	* \param writeOnly (Optional) Decides whether to ask the GPU for copying video memory to system, therefore allowing us to read data from GPU.
+	*
+	* Calls map buffer command which returns a pointer to a memory region representing our uploaded data.
+	*/
+	vec3 *UnlockColormap(bool writeOnly=true) const;
 	void LockColormap();
 
 private:
-	Voxel* _voxels;
-	size_t _voxelc;
-	System * _sys;
-	mat4 *_modelMatrices;
-	vec3 *_modelColors;
+	size_t mVoxelCount;
+	System * mSystem;
+	mat4 *mModelMatrices;
+	vec3 *mModelColors;
 
 	GLuint mb, cb;
 
 public:
-	static void SetPosition(mat4* _modelMatrix, glm::vec3 position);
-	static void SetScale(mat4* _modelMatrix, glm::vec3 scale);
-	static void SetIdentity(mat4* _modelMatrix);
+	static void SetPosition(mat4* mModelMatrix, glm::vec3 position);
+	static void SetScale(mat4* mModelMatrix, glm::vec3 scale);
+	static void SetIdentity(mat4* mModelMatrix);
 	static void SetColor(vec3 *_color, glm::vec3 color);
-	static void Plot(mat4* _modelMatrix, glm::vec3 position, glm::vec3 scale);
+	static void Plot(mat4* mModelMatrix, glm::vec3 position, glm::vec3 scale);
 };

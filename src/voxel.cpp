@@ -12,6 +12,9 @@
 // */
 
 #include "voxel.hpp"
+#include <assimp/Importer.hpp>      // C++ importer interface
+#include <assimp/scene.h>           // Output data structure
+#include <assimp/postprocess.h>     // Post processing fla
 
 Voxel::Voxel(glm::vec3 position, glm::vec3 scale, glm::vec3 color)
 {
@@ -22,28 +25,28 @@ Voxel::Voxel(glm::vec3 position, glm::vec3 scale, glm::vec3 color)
 
 void Voxel::SetPosition(glm::vec3 position)
 {
-	_modelMatrix *= translate(position);
+	mModelMatrix *= translate(position);
 }
 
 void Voxel::SetScale(glm::vec3 scale)
 {
-	_modelMatrix *= glm::scale(scale);
+	mModelMatrix *= glm::scale(scale);
 }
 
 void Voxel::SetIdentity()
 {
-	_modelMatrix = mat4(1.f);
+	mModelMatrix = mat4(1.f);
 }
 
 void Voxel::SetColor(glm::vec3 color)
 {
-	_color = color;
+	mColor = color;
 }
 
 void Voxel::Plot(glm::vec3 position, glm::vec3 scale)
 {
 	SetIdentity();
-	_modelMatrix = translate(position * (scale * vec3(2.f))) * glm::scale(scale);
+	mModelMatrix = translate(position * (scale * vec3(2.f))) * glm::scale(scale);
 }
 
 void Voxel::RenderVoxel()
@@ -54,84 +57,77 @@ void Voxel::RenderVoxel()
 
 glm::mat4 Voxel::GetModelMatrix() const
 {
-	return _modelMatrix;
+	return mModelMatrix;
 }
 
 glm::vec3 Voxel::GetColor() const
 {
-	return _color;
+	return mColor;
 }
 
-GLuint Voxel::vao = 0;
-GLuint Voxel::vb = 0;
-GLuint Voxel::nb = 0;
-GLuint Voxel::eb = 0;
+GLuint Voxel::mVAO = 0;
+GLuint Voxel::mVertexBuffer = 0;
+GLuint Voxel::mNormalBuffer = 0;
+GLuint Voxel::mElementBuffer = 0;
 
-const unsigned int Voxel::voxelIndices[] = {
-	0,  1,  2,  0,  2,  3,   //front
-	4,  5,  6,  4,  6,  7,   //right
-	8,  9,  10, 8,  10, 11,  //back
-	12, 13, 14, 12, 14, 15,  //left
-	16, 17, 18, 16, 18, 19,  //upper
-	20, 21, 22, 20, 22, 23 }; //bottom
+std::vector<GLfloat> Voxel::voxelData;
+std::vector<GLfloat> Voxel::voxelDataNormal;
+std::vector<unsigned int> Voxel::voxelIndices;
 
-const GLfloat Voxel::voxelData[] = {
-	-1.0f,-1.0f,-1.0f, // triangle 1 : begin
-	-1.0f,-1.0f, 1.0f,
-	-1.0f, 1.0f, 1.0f, // triangle 1 : end
-	1.0f, 1.0f,-1.0f, // triangle 2 : begin
-	-1.0f,-1.0f,-1.0f,
-	-1.0f, 1.0f,-1.0f, // triangle 2 : end
-	1.0f,-1.0f, 1.0f,
-	-1.0f,-1.0f,-1.0f,
-	1.0f,-1.0f,-1.0f,
-	1.0f, 1.0f,-1.0f,
-	1.0f,-1.0f,-1.0f,
-	-1.0f,-1.0f,-1.0f,
-	-1.0f,-1.0f,-1.0f,
-	-1.0f, 1.0f, 1.0f,
-	-1.0f, 1.0f,-1.0f,
-	1.0f,-1.0f, 1.0f,
-	-1.0f,-1.0f, 1.0f,
-	-1.0f,-1.0f,-1.0f,
-	-1.0f, 1.0f, 1.0f,
-	-1.0f,-1.0f, 1.0f,
-	1.0f,-1.0f, 1.0f,
-	1.0f, 1.0f, 1.0f,
-	1.0f,-1.0f,-1.0f,
-	1.0f, 1.0f,-1.0f,
-	1.0f,-1.0f,-1.0f,
-	1.0f, 1.0f, 1.0f,
-	1.0f,-1.0f, 1.0f,
-	1.0f, 1.0f, 1.0f,
-	1.0f, 1.0f,-1.0f,
-	-1.0f, 1.0f,-1.0f,
-	1.0f, 1.0f, 1.0f,
-	-1.0f, 1.0f,-1.0f,
-	-1.0f, 1.0f, 1.0f,
-	1.0f, 1.0f, 1.0f,
-	-1.0f, 1.0f, 1.0f,
-	1.0f,-1.0f, 1.0f
-};
 
 void Voxel::BuildVoxelData()
 {
-	if (vao == 0 || vb == 0)
+	if (mVAO == 0 || mVertexBuffer == 0)
 	{
-		glGenVertexArrays(1, &vao);
-		glBindVertexArray(vao);
+		Assimp::Importer Importer;
+		const aiScene* scene = Importer.ReadFile("voxel.obj", aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices);
 
-		glGenBuffers(1, &vb);
-		glBindBuffer(GL_ARRAY_BUFFER, vb);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 108, voxelData, GL_STATIC_DRAW);
+		if(!scene)
+		{
+			printf("Could not load voxel.obj!\n");
+			getchar();
+			exit(-1);
+		}
 
-		glGenBuffers(1, &eb);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, eb);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * 36, voxelIndices, GL_STATIC_DRAW);
+		const aiMesh* mesh = scene->mMeshes[0];
 
-		glGenBuffers(1, &nb);
-		glBindBuffer(GL_ARRAY_BUFFER, nb);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 108, voxelData, GL_STATIC_DRAW);
+		for(size_t i=0; i<mesh->mNumVertices; i++)
+		{
+			const aiVector3D* pos = &(mesh->mVertices[i]);
+			const aiVector3D* normal = &(mesh->mNormals[i]);
+
+			voxelData.push_back(pos->x);
+			voxelData.push_back(pos->y);
+			voxelData.push_back(pos->z);
+
+			voxelDataNormal.push_back(normal->x);
+			voxelDataNormal.push_back(normal->y);
+			voxelDataNormal.push_back(normal->z);
+		}
+
+		for(size_t i=0;i<mesh->mNumFaces;i++)
+		{
+			const aiFace& face = mesh->mFaces[i];
+
+			voxelIndices.push_back(face.mIndices[0]);
+			voxelIndices.push_back(face.mIndices[1]);
+			voxelIndices.push_back(face.mIndices[2]);
+		}
+
+		glGenVertexArrays(1, &mVAO);
+		glBindVertexArray(mVAO);
+
+		glGenBuffers(1, &mVertexBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * voxelData.size(), &voxelData[0], GL_STATIC_DRAW);
+
+		glGenBuffers(1, &mElementBuffer);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mElementBuffer);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * voxelIndices.size(), &voxelIndices[0], GL_STATIC_DRAW);
+
+		glGenBuffers(1, &mNormalBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, mNormalBuffer);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * voxelData.size(), &voxelData[0], GL_STATIC_DRAW);
 		printf("Voxel data has been sent to the GPU!\n");
 	}
 }

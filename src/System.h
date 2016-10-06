@@ -24,16 +24,16 @@ public:
 	System();
 
 	void BeginFrame(float deltaTime);
-	void EndFrame(vec3 lightDir, vec3 lightColor);
+	void EndFrame() const;
 
-	Window *GetWindow() { return &_window; }
-	VoxelScene *GetVoxelScene() { return &_voxelScene; }
-	ShaderHandler *GetShaderHandler() { return &_shaderHandler; }
-	Camera *GetCamera() { return &_camera; }
+	Window *GetWindow() { return &mWindow; }
+	VoxelScene *GetVoxelScene() { return &mVoxelScene; }
+	ShaderHandler *GetShaderHandler() { return &mShaderHandler; }
+	Camera *GetCamera() { return &mCamera; }
 
 private:
-	Window _window;
-	Camera _camera;
-	ShaderHandler _shaderHandler;
-	VoxelScene _voxelScene;
+	Window mWindow;
+	Camera mCamera;
+	ShaderHandler mShaderHandler;
+	VoxelScene mVoxelScene;
 };

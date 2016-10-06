@@ -17,14 +17,14 @@ Window::Window()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// Open a window and create its OpenGL context
-	_window = glfwCreateWindow(1024, 768, "Arogine", NULL, NULL);
-	if (_window == nullptr) {
+	mWindow = glfwCreateWindow(1024, 768, "Arogine", NULL, NULL);
+	if (mWindow == nullptr) {
 		fprintf(stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. We are sorry for that :/.\n");
 		getchar();
 		glfwTerminate();
 		exit(-1);
 	}
-	glfwMakeContextCurrent(_window);
+	glfwMakeContextCurrent(mWindow);
 
 	// Initialize GLEW
 	glewExperimental = GL_TRUE;
@@ -36,7 +36,7 @@ Window::Window()
 	}
 
 	// Ensure we can capture the escape key being pressed below
-	glfwSetInputMode(_window, GLFW_STICKY_KEYS, GL_TRUE);
+	glfwSetInputMode(mWindow, GLFW_STICKY_KEYS, GL_TRUE);
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
@@ -47,11 +47,11 @@ Window::Window()
 
 void Window::Update() const
 {
-	glfwSwapBuffers(_window);
+	glfwSwapBuffers(mWindow);
 	glfwPollEvents();
 }
 
 GLFWwindow* Window::GetWindow()
 {
-	return _window;
+	return mWindow;
 }

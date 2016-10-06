@@ -762,7 +762,7 @@ struct btDbvtBenchmark
 	}
 	static btDbvtVolume	RandVolume(btScalar cs,btScalar eb,btScalar es)
 	{
-		return(btDbvtVolume::FromCE(RandVector3(cs),btVector3(eb,eb,eb)+RandVector3()*es));
+		return(btDbvtVolume::FromCE(RandVector3(cs),btVector3(eb,mElementBuffer,mElementBuffer)+RandVector3()*es));
 	}
 	static btTransform		RandTransform(btScalar cs)
 	{

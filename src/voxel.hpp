@@ -14,6 +14,7 @@
 #pragma once
 
 #include "defs.hpp"
+#include <vector>
 
 class Voxel
 {
@@ -32,12 +33,17 @@ public:
 	glm::mat4 GetModelMatrix() const;
 	glm::vec3 GetColor() const;
 
-	static GLuint vao, vb, nb, eb;
+	static GLuint mVAO, mVertexBuffer, mNormalBuffer, mElementBuffer;
+
+	static std::vector<GLfloat> voxelData;
+	static std::vector<GLfloat> voxelDataNormal;
+	static std::vector<unsigned int> voxelIndices;
 	static void BuildVoxelData();
 private:
-	glm::mat4 _modelMatrix;
-	glm::vec3 _color;
+	glm::mat4 mModelMatrix;
+	glm::vec3 mColor;
 
-	static const unsigned int Voxel::voxelIndices[];
-	static const GLfloat voxelData[];
+	//static const unsigned int Voxel::voxelIndices[];
+	//static const GLfloat voxelData[];
+	
 };

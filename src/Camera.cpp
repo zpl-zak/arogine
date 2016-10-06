@@ -21,22 +21,22 @@ Camera::Camera(glm::vec3 position, glm::vec2 angle)
 
 glm::mat4 Camera::GetViewMatrix() const
 {
-	return _viewMatrix;
+	return mViewMatrix;
 }
 
 glm::mat4 Camera::GetProjectionMatrix() const
 {
-	return _projMatrix;
+	return mProjMatrix;
 }
 
 void Camera::SetPosition(glm::vec3 position)
 {
-	_position = position;
+	mPosition = position;
 }
 
 void Camera::SetAngle(glm::vec2 angle)
 {
-	_angle = angle;
+	mAngle = angle;
 }
 
 void Camera::HandleInput(GLFWwindow* window, float deltaTime)
@@ -56,50 +56,50 @@ void Camera::HandleInput(GLFWwindow* window, float deltaTime)
 		firstMousePos = false;
 	}
 
-	_angle[0] += mouseSpeed * deltaTime * float(w / 2 - xpos);
-	_angle[1] -= mouseSpeed * deltaTime * float(h / 2 - ypos);
+	mAngle[0] += mouseSpeed * deltaTime * float(w / 2 - xpos);
+	mAngle[1] -= mouseSpeed * deltaTime * float(h / 2 - ypos);
 
-	if (_angle[1] < 21.f)
-		_angle[1] = 21.f;
-	else if (_angle[1] > 23.f)
-		_angle[1] = 23.f;
+	if (mAngle[1] < 21.f)
+		mAngle[1] = 21.f;
+	else if (mAngle[1] > 23.f)
+		mAngle[1] = 23.f;
 
 	glm::vec3 direction (
-		cos(_angle[1]) * sin(_angle[0]),
-		sin(_angle[1]),
-		cos(_angle[1]) * cos(_angle[0])
+		cos(mAngle[1]) * sin(mAngle[0]),
+		sin(mAngle[1]),
+		cos(mAngle[1]) * cos(mAngle[0])
 	);
 
 	glm::vec3 right(
-		sin(_angle[0] - 3.14f / 2.f),
+		sin(mAngle[0] - 3.14f / 2.f),
 		0,
-		cos(_angle[0] - 3.14f / 2.f)
+		cos(mAngle[0] - 3.14f / 2.f)
 	);
 
 	glm::vec3 up = glm::cross(right, direction);
 
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-		_position -= direction * deltaTime * speed;
+		mPosition -= direction * deltaTime * speed;
 	}
 	// Move backward
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-		_position += direction * deltaTime * speed;
+		mPosition += direction * deltaTime * speed;
 	}
 	// Strafe right
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		_position -= right * deltaTime * speed;
+		mPosition -= right * deltaTime * speed;
 	}
 	// Strafe left
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		_position += right * deltaTime * speed;
+		mPosition += right * deltaTime * speed;
 	}
 
-	_projMatrix = glm::perspective(glm::radians(45.f),
+	mProjMatrix = glm::perspective(glm::radians(45.f),
 		static_cast<float>(w) / static_cast<float>(h), 0.01f, 100.f);
 
-	_viewMatrix = glm::lookAt(
-		_position,
-		_position+direction,
+	mViewMatrix = glm::lookAt(
+		mPosition,
+		mPosition+direction,
 		up
 	);
 }

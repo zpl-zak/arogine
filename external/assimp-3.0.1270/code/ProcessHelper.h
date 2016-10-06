@@ -47,6 +47,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "BaseProcess.h"
 #include "ParsingUtils.h"
 
+#include <list>
+
 // -------------------------------------------------------------------------------
 // Some extensions to std namespace. Mainly std::min and std::max for all
 // flat data types in the aiScene. They're used to quickly determine the

@@ -46,7 +46,7 @@ int main( void )
 	size_t pw=0, ph=0, pw2=0, ph2=0;
 	size_t size = 0, size2=0;
 
-	int windoww = 0.f, windowh = 0.f;
+	int windoww = 0, windowh = 0;
 	glfwGetWindowSize(sys.GetWindow()->GetWindow(), &windoww, &windowh);
 
 	float *pixels = VoxelImage::DownloadImage(size, "doom.png.ari", pw, ph);
@@ -71,7 +71,7 @@ int main( void )
 	//free(pixels);
 	sys.GetVoxelScene()->UploadVoxelPointer(static_cast<Voxel*>(voxels), m);
 
-	float fmr = .1f;
+	double fmr = .1;
 	do{
 		float currentTime = static_cast<float>(glfwGetTime());
 		deltaTime = lastTime - currentTime;
@@ -82,7 +82,7 @@ int main( void )
 				   // printf and reset timer
 
 
-			fmr = double(nbFrames);
+			fmr = nbFrames;
 			nbFrames = 0;
 			lastframeshot += .1f;
 		}
@@ -112,7 +112,7 @@ int main( void )
 			}
 			sys.GetVoxelScene()->LockColormap();
 		}
-		sys.EndFrame(lightVec, lightColor);
+		sys.EndFrame();
 
 		glDisable(GL_DEPTH_TEST);
 		static char buf[999] = {};
@@ -120,7 +120,7 @@ int main( void )
 		printText2D(buf, 10, 10, 12);
 		glEnable(GL_DEPTH_TEST);
 
-		randomtest.RenderVoxelScene(lightVec, lightColor);
+		randomtest.RenderVoxelScene();
 
 		sys.GetWindow()->Update();
 

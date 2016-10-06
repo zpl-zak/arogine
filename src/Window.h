@@ -23,5 +23,5 @@ public:
 	GLFWwindow *GetWindow();
 
 private:
-	GLFWwindow *_window;
+	GLFWwindow *mWindow;
 };

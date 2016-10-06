@@ -48,6 +48,7 @@ set(ALL_LIBS
 	glfw
 	GLEW_1130
 	noise-static
+	assimp
 )
 
 add_definitions(
