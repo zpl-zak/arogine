@@ -20,7 +20,7 @@ public:
 	Window();
 
 	void Update() const;
-	GLFWwindow *GetWindow();
+	GLFWwindow *GetWindow() const;
 
 private:
 	GLFWwindow *mWindow;

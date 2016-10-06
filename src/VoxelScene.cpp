@@ -2,6 +2,10 @@
 #include "voxel.hpp"
 #include "System.h"
 
+VoxelScene::VoxelScene(): mVoxelCount(0), mSystem(nullptr), mModelMatrices(nullptr), mModelColors(nullptr), mb(0), cb(0)
+{
+}
+
 VoxelScene::VoxelScene(System *system)
 {
 	mSystem = system;
@@ -110,7 +114,7 @@ void VoxelScene::RenderVoxelScene() const
 mat4* VoxelScene::UnlockScene(bool writeOnly) const
 {
 	glBindBuffer(GL_ARRAY_BUFFER, mb);
-	auto r = (mat4*)glMapBuffer(GL_ARRAY_BUFFER, (writeOnly) ? GL_WRITE_ONLY : GL_READ_WRITE);
+	auto r = static_cast<mat4*>(glMapBuffer(GL_ARRAY_BUFFER, (writeOnly) ? GL_WRITE_ONLY : GL_READ_WRITE));
 	if (!r)
 	{
 		printf("glMap error: %d\n", glGetError());
@@ -129,7 +133,7 @@ vec3* VoxelScene::UnlockColormap(bool writeOnly) const
 {
 	//glUnmapBuffer(GL_ARRAY_BUFFER);
 	glBindBuffer(GL_ARRAY_BUFFER, cb);
-	auto r = (vec3*)glMapBuffer(GL_ARRAY_BUFFER, (writeOnly) ? GL_WRITE_ONLY : GL_READ_WRITE);
+	auto r = static_cast<vec3*>(glMapBuffer(GL_ARRAY_BUFFER, (writeOnly) ? GL_WRITE_ONLY : GL_READ_WRITE));
 	if(!r)
 	{
 		printf("glMap error: %d\n", glGetError());

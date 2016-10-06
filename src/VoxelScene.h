@@ -31,7 +31,8 @@ class System;
 class VoxelScene
 {
 public:
-	VoxelScene(){}
+	VoxelScene();
+
 	VoxelScene(System * system);
 
 	/** 
@@ -45,10 +46,6 @@ public:
 
 	/** 
 	 * \brief Invoke render commands.
-	 * \param lightDir The direction of light passed to the shader program.
-	 * \param lightColor The color of light passed to the shader program.
-	 *  
-	 * \note Get rid of parameters and introduce a better way to access light properties.
 	 *  
 	 * Method publishes updated uniforms to the shader program and maps buffers to the shader inputs.
 	 * It then invokes render command, which produces instanced meshes.
@@ -73,7 +70,7 @@ public:
 	* Calls map buffer command which returns a pointer to a memory region representing our uploaded data.
 	*/
 	vec3 *UnlockColormap(bool writeOnly=true) const;
-	void LockColormap();
+	static void LockColormap();
 
 private:
 	size_t mVoxelCount;

@@ -12,7 +12,6 @@
 // */
 #pragma once
 
-#include "defs.hpp"
 #include "Window.h"
 #include "Camera.h"
 #include "ShaderHandler.h"

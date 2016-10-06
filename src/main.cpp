@@ -87,9 +87,6 @@ int main( void )
 			lastframeshot += .1f;
 		}
 
-		vec3 lightVec(-1, 1, 1);
-		vec3 lightColor(1, 1, 1);
-
 		sys.BeginFrame(deltaTime);
 		{
 			vec3 *col = sys.GetVoxelScene()->UnlockColormap();

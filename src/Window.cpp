@@ -17,7 +17,7 @@ Window::Window()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// Open a window and create its OpenGL context
-	mWindow = glfwCreateWindow(1024, 768, "Arogine", NULL, NULL);
+	mWindow = glfwCreateWindow(1024, 768, "Arogine", nullptr, nullptr);
 	if (mWindow == nullptr) {
 		fprintf(stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. We are sorry for that :/.\n");
 		getchar();
@@ -51,7 +51,7 @@ void Window::Update() const
 	glfwPollEvents();
 }
 
-GLFWwindow* Window::GetWindow()
+GLFWwindow* Window::GetWindow() const
 {
 	return mWindow;
 }

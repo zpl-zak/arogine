@@ -4,7 +4,7 @@
 
 float *VoxelImage::DownloadImage(size_t &size, const char* Path, size_t &twidth, size_t &theight)
 {
-	float *Buffer = nullptr;
+	float *Buffer;
 	size_t r = 0;
 	{
 		FILE *fp = fopen(Path, "rb");
