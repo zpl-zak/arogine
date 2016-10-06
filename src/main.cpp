@@ -19,24 +19,7 @@
 
 // Include interns
 #include "System.h"
-
-#ifdef LINUX
-#include <unistd.h>
-#endif
-#ifdef WINDOWS
-#include <windows.h>
-#endif
-
-void mySleep(int sleepMs)
-{
-#ifdef LINUX
-	usleep(sleepMs * 1000);   // usleep takes sleep time in us (1 millionth of a second)
-#endif
-#ifdef WINDOWS
-	Sleep(sleepMs);
-#endif
-}
-
+#include <module/perlin.h>
 
 float deltaTime = 0;
 float lastTime = 0;
@@ -49,6 +32,16 @@ int main( void )
 	double lastframeshot = glfwGetTime();
 
 	initText2D("Holstein.dds");
+
+	noise::module::Perlin gen;
+
+
+	VoxelScene randomtest = VoxelScene(&sys);
+
+	Voxel randomone = Voxel();
+	randomone.Plot(vec3(0.f, -5.f, 0.f), vec3(.05f));
+	randomone.SetColor(vec3(1, 1, 0));
+	randomtest.UploadVoxelPointer(&randomone, 1);
 
 	size_t pw=0, ph=0, pw2=0, ph2=0;
 	size_t size = 0, size2=0;
@@ -76,7 +69,7 @@ int main( void )
 		}
 	}
 	//free(pixels);
-	sys.GetVoxelScene()->UploadVoxelPointer((Voxel*)voxels, m);
+	sys.GetVoxelScene()->UploadVoxelPointer(static_cast<Voxel*>(voxels), m);
 
 	float fmr = .1f;
 	do{
@@ -119,7 +112,6 @@ int main( void )
 			}
 			sys.GetVoxelScene()->LockColormap();
 		}
-		
 		sys.EndFrame(lightVec, lightColor);
 
 		glDisable(GL_DEPTH_TEST);
@@ -128,9 +120,9 @@ int main( void )
 		printText2D(buf, 10, 10, 12);
 		glEnable(GL_DEPTH_TEST);
 
-		sys.GetWindow()->Update();
+		randomtest.RenderVoxelScene(lightVec, lightColor);
 
-		mySleep(50);
+		sys.GetWindow()->Update();
 
 		lastTime = currentTime;
 	} // Check if the ESC key was pressed or the window was closed

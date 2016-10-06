@@ -55,7 +55,6 @@ target_link_libraries(GLEW_1130
 	${EXTRA_LIBS}
 )
 
-
 ### ANTTWEAKBAR ###
 
 set(ANTTWEAKBAR_SOURCE
@@ -133,6 +132,8 @@ set(ANTTWEAKBAR_HEADERS
 include_directories(
 	AntTweakBar-1.16/include/
 )
+
+add_subdirectory(libnoise/src)
 
 add_library( ANTTWEAKBAR_116_OGLCORE_GLFW STATIC
 	${ANTTWEAKBAR_SOURCE}
