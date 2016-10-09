@@ -2,45 +2,34 @@
 #include "voxel.hpp"
 #include "System.h"
 
-VoxelScene::VoxelScene(): mVoxelCount(0), mSystem(nullptr), mModelMatrices(nullptr), mModelColors(nullptr), mb(0), cb(0)
+VoxelScene::VoxelScene(Camera* camera)
 {
-}
-
-VoxelScene::VoxelScene(System *system)
-{
-	mSystem = system;
+	mCamera = camera;
 	
 	Voxel::BuildVoxelData(); // IMPORTANT!!
 	mVoxelCount = 0;
 
 	mb = cb = 0;
-	mModelMatrices = nullptr;
-	mModelColors = nullptr;
 }
 
-void VoxelScene::UploadVoxelPointer(const Voxel* voxelPtr, size_t voxelCount)
+void VoxelScene::UploadVoxels(const std::vector<Voxel> voxelvec, size_t voxelCount)
 {
 	mVoxelCount = voxelCount;
 
-	if (mModelMatrices)
+	if (mModelMatrices.size() > 0)
 	{
-		free(mModelMatrices);
-		mModelMatrices = nullptr;
+		mModelMatrices.clear();
 	}
 
-	if(mModelColors)
+	if(mModelColors.size() > 0)
 	{
-		free(mModelColors);
-		mModelColors = nullptr;
+		mModelColors.clear();
 	}
-
-	mModelMatrices = static_cast<mat4*>(malloc(sizeof(mat4) * voxelCount));
-	mModelColors = static_cast<vec3*>(malloc(sizeof(vec3) * voxelCount));
 
 	for(size_t i=0; i<voxelCount; i++)
 	{
-		mModelMatrices[i] = voxelPtr[i].GetModelMatrix();
-		mModelColors[i] = voxelPtr[i].GetColor();
+		mModelMatrices.push_back(voxelvec.at(i).GetModelMatrix());
+		mModelColors.push_back(voxelvec.at(i).GetColor());
 	}
 
 	if(mb != 0)
@@ -62,15 +51,18 @@ void VoxelScene::UploadVoxelPointer(const Voxel* voxelPtr, size_t voxelCount)
 	glGenBuffers(1, &cb);
 	glBindBuffer(GL_ARRAY_BUFFER, cb);
 	glBufferData(GL_ARRAY_BUFFER, voxelCount * sizeof(vec3), &mModelColors[0][0], GL_STATIC_DRAW);
+
+	mModelMatrices.clear();
+	mModelColors.clear();
 }
 
-void VoxelScene::RenderVoxelScene() const
+void VoxelScene::Render() const
 {
 	if (mb == 0 || cb == 0)return;
 
-	mSystem->GetShaderHandler()->Publish(
-		mSystem->GetCamera()->GetViewMatrix(),
-		mSystem->GetCamera()->GetProjectionMatrix(),
+	mBaseShader.Publish(
+		mCamera->GetViewMatrix(),
+		mCamera->GetProjectionMatrix(),
 		vec3(1.f), vec3(1.f)
 	);
 

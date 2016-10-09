@@ -14,7 +14,7 @@
 
 #include "Window.h"
 #include "Camera.h"
-#include "ShaderHandler.h"
+#include "BaseShader.h"
 #include "VoxelScene.h"
 
 class System
@@ -25,14 +25,10 @@ public:
 	void BeginFrame(float deltaTime);
 	void EndFrame() const;
 
-	Window *GetWindow() { return &mWindow; }
-	VoxelScene *GetVoxelScene() { return &mVoxelScene; }
-	ShaderHandler *GetShaderHandler() { return &mShaderHandler; }
-	Camera *GetCamera() { return &mCamera; }
+	auto GetWindow() -> Window*{ return &mWindow; }
+	auto GetCamera() -> Camera*{ return &mCamera; }
 
 private:
 	Window mWindow;
 	Camera mCamera;
-	ShaderHandler mShaderHandler;
-	VoxelScene mVoxelScene;
 };

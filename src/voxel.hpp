@@ -30,8 +30,8 @@ public:
 
 	static void RenderVoxel();
 
-	glm::mat4 GetModelMatrix() const;
-	glm::vec3 GetColor() const;
+	auto GetModelMatrix() const -> mat4 const;
+	auto GetColor() const -> vec3 const;
 
 	static GLuint mVAO, mVertexBuffer, mNormalBuffer, mElementBuffer;
 
@@ -40,8 +40,8 @@ public:
 	static std::vector<unsigned int> voxelIndices;
 	static void BuildVoxelData();
 private:
-	glm::mat4 mModelMatrix;
-	glm::vec3 mColor;
+	mat4 mModelMatrix;
+	vec3 mColor;
 
 	//static const unsigned int Voxel::voxelIndices[];
 	//static const GLfloat voxelData[];

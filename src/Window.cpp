@@ -51,7 +51,7 @@ void Window::Update() const
 	glfwPollEvents();
 }
 
-GLFWwindow* Window::GetWindow() const
+auto Window::GetWindow() const -> GLFWwindow* const
 {
 	return mWindow;
 }

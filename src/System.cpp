@@ -3,7 +3,6 @@
 System::System()
 {
 	mCamera = Camera(vec3(0, 0, 0), vec2(3.14f, 0.f));
-	mVoxelScene = VoxelScene(this);
 }
 void System::BeginFrame(float deltaTime)
 {
@@ -13,5 +12,5 @@ void System::BeginFrame(float deltaTime)
 
 void System::EndFrame() const
 {
-	mVoxelScene.RenderVoxelScene();
+	mWindow.Update();
 }

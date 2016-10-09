@@ -59,25 +59,20 @@ add_definitions(
 	-D_CRT_SECURE_NO_WARNINGS
 )
 
+file(GLOB_RECURSE SRCS
+	${Arogine_SOURCE_DIR}/src/*.cpp
+	${Arogine_SOURCE_DIR}/src/*.c
+	${Arogine_SOURCE_DIR}/src/*.h
+	${Arogine_SOURCE_DIR}/src/*.hpp
+	${Arogine_SOURCE_DIR}/src/*.vs
+	${Arogine_SOURCE_DIR}/src/*.fs
+	${Arogine_SOURCE_DIR}/src/*.vertexshader
+	${Arogine_SOURCE_DIR}/src/*.fragmentshader
+)
+
 # Executable
 add_executable(arogine 
-	src/main.cpp
-	src/voxel.cpp
-	src/Camera.cpp
-	src/System.cpp
-	src/ShaderHandler.cpp
-	src/VoxelScene.cpp
-	src/Window.cpp
-
-	common/shader.cpp
-	common/VoxelImage.cpp
-	common/text2D.cpp
-	common/texture.cpp
-
-	src/shader/simple.vs
-	src/shader/simple.fs
-	src/shader/TextVertexShader.fragmentshader
-	src/shader/TextVertexShader.vertexshader
+	${SRCS}
 )
 target_link_libraries(arogine
 	${ALL_LIBS}

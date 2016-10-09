@@ -14,6 +14,8 @@
 
 #include "defs.hpp"
 #include "voxel.hpp"
+#include "RaymarchShader.h"
+#include "Camera.h"
 
 class System;
 
@@ -31,18 +33,16 @@ class System;
 class VoxelScene
 {
 public:
-	VoxelScene();
-
-	VoxelScene(System * system);
+	explicit VoxelScene(Camera* camera);
 
 	/** 
 	 * \brief Upload voxel array to the GPU.
-	 * \param voxelPtr Pointer to an array of voxels.
+	 * \param voxelvec Pointer to an array of voxels.
 	 * \param voxelCount Number of voxels passed to the GPU.
 	 *  
 	 * Method generates new buffers and uploads a sequence of voxel properties to the GPU.
 	 */
-	void UploadVoxelPointer(const Voxel* voxelPtr, size_t voxelCount);
+	void UploadVoxels(const std::vector<Voxel> voxelvec, size_t voxelCount);
 
 	/** 
 	 * \brief Invoke render commands.
@@ -50,7 +50,7 @@ public:
 	 * Method publishes updated uniforms to the shader program and maps buffers to the shader inputs.
 	 * It then invokes render command, which produces instanced meshes.
 	 */
-	void RenderVoxelScene() const;
+	void Render() const;
 
 	size_t GetVoxelCount() const { return mVoxelCount; }
 	
@@ -74,11 +74,12 @@ public:
 
 private:
 	size_t mVoxelCount;
-	System * mSystem;
-	mat4 *mModelMatrices;
-	vec3 *mModelColors;
+	Camera * mCamera;
+	std::vector<mat4> mModelMatrices;
+	std::vector<vec3> mModelColors;
 
 	GLuint mb, cb;
+	BaseShader mBaseShader;
 
 public:
 	static void SetPosition(mat4* mModelMatrix, glm::vec3 position);

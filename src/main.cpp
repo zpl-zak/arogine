@@ -20,118 +20,112 @@
 // Include interns
 #include "System.h"
 #include <module/perlin.h>
+#include "RaymarchScene.h"
 
 float deltaTime = 0;
 float lastTime = 0;
 
-int main( void )
+int main(void)
 {
 	System sys;
-	
-	int nbFrames = 0;
-	double lastframeshot = glfwGetTime();
+
+	auto nbFrames = 0;
+	auto lastframeshot = glfwGetTime();
 
 	initText2D("Holstein.dds");
 
 	noise::module::Perlin gen;
 
 
-	VoxelScene randomtest = VoxelScene(&sys);
+	auto randomtest = VoxelScene(sys.GetCamera());
+	auto mainscene = VoxelScene(sys.GetCamera());
+	auto raym = RaymarchScene(sys.GetCamera());
 
-	Voxel randomone = Voxel();
-	randomone.Plot(vec3(0.f, -5.f, 0.f), vec3(.05f));
-	randomone.SetColor(vec3(1, 1, 0));
-	randomtest.UploadVoxelPointer(&randomone, 1);
+	size_t pw = 0, ph = 0, pw2 = 0, ph2 = 0;
+	size_t size = 0, size2 = 0;
 
-	size_t pw=0, ph=0, pw2=0, ph2=0;
-	size_t size = 0, size2=0;
-
-	int windoww = 0, windowh = 0;
+	auto windoww = 0, windowh = 0;
 	glfwGetWindowSize(sys.GetWindow()->GetWindow(), &windoww, &windowh);
 
-	float *pixels = VoxelImage::DownloadImage(size, "doom.png.ari", pw, ph);
-	float *pixels2 = VoxelImage::DownloadImage(size2, "doom2.png.ari", pw2, ph2);
+	auto pixels = VoxelImage::DownloadImage(size, "Landscape.png.ari", pw, ph);
+	//auto pixels2 = VoxelImage::DownloadImage(size2, "doom2.png.ari", pw2, ph2);
 
-	size_t m = size;
-	Voxel *voxels = new Voxel[m];
-	size_t k = 0,q=0;
-	for(size_t i = 0; i<pw;i++)
+	auto m = size;
+	std::vector<Voxel> voxels;
+	size_t k = 0, q = 0;
+	for (unsigned i = 0; i < pw; i++)
 	{
-		for(size_t j = 0; j<ph;j++, q += 3)
+		for (unsigned j = 0; j < ph; j++ , q += 3)
 		{
-			float r = pixels[q];
-			float g = pixels[q + 1];
-			float b = pixels[q + 2];
-			float intensity = sqrtf(r*r + g*g + b*b);
-			voxels[k].Plot(vec3(i, 0, j), vec3(.01f));
-			voxels[k].SetColor(vec3(r, g, b));
+			Voxel v;
+			auto r = pixels.at(q);
+			auto g = pixels.at(q + 1);
+			auto b = pixels.at(q + 2);
+			//auto intensity = sqrtf(r * r + g * g + b * b);
+			v.Plot(vec3(i, 0, j), vec3(.01f));
+			v.SetColor(vec3(r, g, b));
+			voxels.push_back(v);
 			k++;
 		}
 	}
-	//free(pixels);
-	sys.GetVoxelScene()->UploadVoxelPointer(static_cast<Voxel*>(voxels), m);
 
-	double fmr = .1;
-	do{
-		float currentTime = static_cast<float>(glfwGetTime());
+	mainscene.UploadVoxels(voxels, m);
+	voxels.clear();
+
+	auto fmr = .1;
+	do
+	{
+		auto currentTime = static_cast<float>(glfwGetTime());
 		deltaTime = lastTime - currentTime;
-		
+
 		nbFrames++;
-		bool odd = (currentTime - lastframeshot) >= .1f;
-		if (odd) { // If last prinf() was more than 1 sec ago
-				   // printf and reset timer
-
-
+		if (currentTime - lastframeshot >= 1.f)
+		{
 			fmr = nbFrames;
 			nbFrames = 0;
-			lastframeshot += .1f;
+			lastframeshot += 1.f;
 		}
 
 		sys.BeginFrame(deltaTime);
-		{
-			vec3 *col = sys.GetVoxelScene()->UnlockColormap();
+		/*{
+			auto col = mainscene.UnlockColormap();
 			q = 0;
-			for(size_t i =0;i<sys.GetVoxelScene()->GetVoxelCount();i++,q+=3)
+			for (size_t i = 0; i < mainscene.GetVoxelCount(); i++ , q += 3)
 			{
-				float r = pixels[q];
-				float g = pixels[q + 1];
-				float b = pixels[q + 2];
-				float r2 = pixels2[q];
-				float g2 = pixels2[q + 1];
-				float b2 = pixels2[q + 2];
-				float t = abs(cos(currentTime));
+				auto r = pixels.at(q);
+				auto g = pixels.at(q + 1);
+				auto b = pixels.at(q + 2);
+				auto r2 = pixels2.at(q);
+				auto g2 = pixels2.at(q + 1);
+				auto b2 = pixels2.at(q + 2);
+				auto t = abs(cos(currentTime));
 
-				float rf = (r + t*(r2 - r));
-				float gf = (g + t*(g2 - g));
-				float bf = (b + t*(b2 - b));
+				auto rf = (r + t * (r2 - r));
+				auto gf = (g + t * (g2 - g));
+				auto bf = (b + t * (b2 - b));
 
-				col[i] = vec3(rf,gf,bf);
+				col[i] = vec3(rf, gf, bf);
 			}
-			sys.GetVoxelScene()->LockColormap();
-		}
-		sys.EndFrame();
+			mainscene.LockColormap();
+		}*/
+		mainscene.Render();
+		//raym.Render();
 
 		glDisable(GL_DEPTH_TEST);
 		static char buf[999] = {};
-		sprintf(buf, "%f ms/frame (%f FPS)\n", fmr, 1000.0f / fmr);
+		sprintf(buf, "%f ms/frame (%f FPS)\n", 1000.0f / fmr, fmr);
 		printText2D(buf, 10, 10, 12);
 		glEnable(GL_DEPTH_TEST);
 
-		randomtest.RenderVoxelScene();
-
-		sys.GetWindow()->Update();
+		sys.EndFrame();
 
 		lastTime = currentTime;
 	} // Check if the ESC key was pressed or the window was closed
-	while( glfwGetKey(sys.GetWindow()->GetWindow(), GLFW_KEY_ESCAPE ) != GLFW_PRESS &&
-		   glfwWindowShouldClose(sys.GetWindow()->GetWindow()) == 0 );
+	while (glfwGetKey(sys.GetWindow()->GetWindow(), GLFW_KEY_ESCAPE) != GLFW_PRESS &&
+		glfwWindowShouldClose(sys.GetWindow()->GetWindow()) == 0);
 
 	// Close OpenGL window and terminate GLFW
 	glfwTerminate();
-
-	delete[] voxels;
-	free(pixels);
-	free(pixels2);
 
 	return 0;
 }

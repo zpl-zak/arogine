@@ -54,15 +54,14 @@ void Voxel::RenderVoxel()
 	
 }
 
-
-glm::mat4 Voxel::GetModelMatrix() const
-{
-	return mModelMatrix;
-}
-
-glm::vec3 Voxel::GetColor() const
+auto Voxel::GetColor() const -> vec3 const
 {
 	return mColor;
+}
+
+auto Voxel::GetModelMatrix() const -> mat4 const
+{
+	return mModelMatrix;
 }
 
 GLuint Voxel::mVAO = 0;
