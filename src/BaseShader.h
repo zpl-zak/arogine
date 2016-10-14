@@ -21,13 +21,10 @@ public:
 	virtual ~BaseShader(){}
 
 	auto GetProgram() const -> GLuint;
-	virtual void Publish(mat4 v, mat4 p, vec3 lit, vec3 lic) const;
+	virtual void Publish(mat4 v, mat4 p) const;
 	
 protected:
 	GLuint mProgram;
-	GLuint mmID;
-	GLuint mvID;
-	GLuint mpID;
-	GLuint lnID;
-	GLuint lcID;
+	GLuint mViewMatrixID;
+	GLuint mProjectionMatrix;
 };

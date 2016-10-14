@@ -7,8 +7,6 @@ layout(location = 6) in vec3 COL;
 
 uniform mat4 V;
 uniform mat4 P;
-uniform vec3 LIT;
-uniform vec3 LIC;
 
 out vec3 voxcolor;
 out vec3 normal;
@@ -20,9 +18,9 @@ void main() {
 	gl_Position = P * V * M * vec4(vert,1);
 
 	eyedir = (vec3(0,0,0) - (V * M * vec4(vert,1)).xyz).xyz;
-	light = (V * vec4(LIT,1)).xyz + eyedir;
+	light = (V * vec4(vec3(1,1,1),1)).xyz + eyedir;
 	normal = (V * M * vec4(norm,1)).xyz;
 
 	voxcolor = COL;
-	lightcolor = LIC;
+	lightcolor = vec3(1,1,1);
 }

@@ -8,6 +8,7 @@ std::vector<float> VoxelImage::DownloadImage(size_t& size, const std::string& pa
 	std::vector<float> Buffer;
 	size_t r = 0;
 	{
+		//TODO(zaklaus): Replace with C++14 alt.
 		FILE *fp = fopen(path.c_str(), "rb");
 		if(!fp)
 		{

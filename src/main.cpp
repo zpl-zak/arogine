@@ -20,10 +20,10 @@
 // Include interns
 #include "System.h"
 #include <module/perlin.h>
-#include "RaymarchScene.h"
 
 float deltaTime = 0;
-float lastTime = 0;
+float lastTime = 0;  
+
 
 int main(void)
 {
@@ -37,41 +37,44 @@ int main(void)
 	noise::module::Perlin gen;
 
 
-	auto randomtest = VoxelScene(sys.GetCamera());
-	auto mainscene = VoxelScene(sys.GetCamera());
-	auto raym = RaymarchScene(sys.GetCamera());
+	auto randomtest = VoxelChunk(sys.GetCamera());
+	auto mainscene = VoxelChunk(sys.GetCamera());
+	//auto raym = RaymarchChunk(sys.GetCamera());
 
 	size_t pw = 0, ph = 0, pw2 = 0, ph2 = 0;
-	size_t size = 0, size2 = 0;
+	size_t size = 100, size2 = 0;
 
 	auto windoww = 0, windowh = 0;
 	glfwGetWindowSize(sys.GetWindow()->GetWindow(), &windoww, &windowh);
 
-	auto pixels = VoxelImage::DownloadImage(size, "Landscape.png.ari", pw, ph);
-	//auto pixels2 = VoxelImage::DownloadImage(size2, "doom2.png.ari", pw2, ph2);
+	auto pixels = VoxelImage::DownloadImage(size, "doom.png.ari", pw, ph);
+	auto pixels2 = VoxelImage::DownloadImage(size2, "doom2.png.ari", pw2, ph2);
 
+	size_t k = 0, q = 0, l = 0;
 	auto m = size;
-	std::vector<Voxel> voxels;
-	size_t k = 0, q = 0;
-	for (unsigned i = 0; i < pw; i++)
 	{
-		for (unsigned j = 0; j < ph; j++ , q += 3)
+		std::vector<Voxel> voxels;
+		for (unsigned i = 0; i < pw; i++)
 		{
-			Voxel v;
-			auto r = pixels.at(q);
-			auto g = pixels.at(q + 1);
-			auto b = pixels.at(q + 2);
-			//auto intensity = sqrtf(r * r + g * g + b * b);
-			v.Plot(vec3(i, 0, j), vec3(.01f));
-			v.SetColor(vec3(r, g, b));
-			voxels.push_back(v);
-			k++;
+			for (unsigned j = 0; j < ph; j++)
+			{
+				for (unsigned l = 0; l < 1; l++, q += 3)
+				{
+					Voxel v;
+					auto r = pixels.at(q);
+					auto g = pixels.at(q + 1);
+					auto b = pixels.at(q + 2);
+					//				//auto intensity = sqrtf(r * r + g * g + b * b);
+					v.Plot(vec3(i, l, j), vec3(.01f));
+					v.SetColor(vec3(r, g, b));
+					voxels.push_back(v);
+					k++;
+				}
+			}
 		}
+		mainscene.UploadVoxels(voxels);
 	}
-
-	mainscene.UploadVoxels(voxels, m);
-	voxels.clear();
-
+	
 	auto fmr = .1;
 	do
 	{
@@ -87,7 +90,7 @@ int main(void)
 		}
 
 		sys.BeginFrame(deltaTime);
-		/*{
+		{
 			auto col = mainscene.UnlockColormap();
 			q = 0;
 			for (size_t i = 0; i < mainscene.GetVoxelCount(); i++ , q += 3)
@@ -107,7 +110,7 @@ int main(void)
 				col[i] = vec3(rf, gf, bf);
 			}
 			mainscene.LockColormap();
-		}*/
+		}
 		mainscene.Render();
 		//raym.Render();
 

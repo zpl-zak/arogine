@@ -15,7 +15,7 @@
 #include "Window.h"
 #include "Camera.h"
 #include "BaseShader.h"
-#include "VoxelScene.h"
+#include "VoxelChunk.h"
 
 class System
 {

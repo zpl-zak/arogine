@@ -1,21 +1,18 @@
-﻿#include "VoxelScene.h"
+﻿#include "VoxelChunk.h"
 #include "voxel.hpp"
 #include "System.h"
 
-VoxelScene::VoxelScene(Camera* camera)
+VoxelChunk::VoxelChunk(Camera* camera) : mVoxelCount(0)
 {
 	mCamera = camera;
 	
 	Voxel::BuildVoxelData(); // IMPORTANT!!
-	mVoxelCount = 0;
 
 	mb = cb = 0;
 }
 
-void VoxelScene::UploadVoxels(const std::vector<Voxel> voxelvec, size_t voxelCount)
+void VoxelChunk::UploadVoxels(const std::vector<Voxel>& voxelvec)
 {
-	mVoxelCount = voxelCount;
-
 	if (mModelMatrices.size() > 0)
 	{
 		mModelMatrices.clear();
@@ -26,7 +23,7 @@ void VoxelScene::UploadVoxels(const std::vector<Voxel> voxelvec, size_t voxelCou
 		mModelColors.clear();
 	}
 
-	for(size_t i=0; i<voxelCount; i++)
+	for(size_t i=0; i<voxelvec.size(); i++)
 	{
 		mModelMatrices.push_back(voxelvec.at(i).GetModelMatrix());
 		mModelColors.push_back(voxelvec.at(i).GetColor());
@@ -41,7 +38,7 @@ void VoxelScene::UploadVoxels(const std::vector<Voxel> voxelvec, size_t voxelCou
 	glBindBuffer(GL_ARRAY_BUFFER, mb);
 	
 	//glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 16 * voxelCount, mModelMatrices, GL_STATIC_DRAW);
-	glBufferData(GL_ARRAY_BUFFER, voxelCount * sizeof(mat4), &mModelMatrices[0][0][0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, voxelvec.size() * sizeof(mat4), &mModelMatrices[0][0][0], GL_STATIC_DRAW);
 
 	if (cb != 0)
 	{
@@ -50,20 +47,23 @@ void VoxelScene::UploadVoxels(const std::vector<Voxel> voxelvec, size_t voxelCou
 
 	glGenBuffers(1, &cb);
 	glBindBuffer(GL_ARRAY_BUFFER, cb);
-	glBufferData(GL_ARRAY_BUFFER, voxelCount * sizeof(vec3), &mModelColors[0][0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, voxelvec.size() * sizeof(vec3), &mModelColors[0][0], GL_STATIC_DRAW);
+
+	mVoxelCount = voxelvec.size();
 
 	mModelMatrices.clear();
+	mModelMatrices.shrink_to_fit();
 	mModelColors.clear();
+	mModelColors.shrink_to_fit();
 }
 
-void VoxelScene::Render() const
+void VoxelChunk::Render() const
 {
 	if (mb == 0 || cb == 0)return;
 
 	mBaseShader.Publish(
 		mCamera->GetViewMatrix(),
-		mCamera->GetProjectionMatrix(),
-		vec3(1.f), vec3(1.f)
+		mCamera->GetProjectionMatrix()
 	);
 
 	
@@ -103,7 +103,7 @@ void VoxelScene::Render() const
 	glDisableVertexAttribArray(0);
 }
 
-mat4* VoxelScene::UnlockScene(bool writeOnly) const
+mat4* VoxelChunk::UnlockScene(bool writeOnly) const
 {
 	glBindBuffer(GL_ARRAY_BUFFER, mb);
 	auto r = static_cast<mat4*>(glMapBuffer(GL_ARRAY_BUFFER, (writeOnly) ? GL_WRITE_ONLY : GL_READ_WRITE));
@@ -116,12 +116,12 @@ mat4* VoxelScene::UnlockScene(bool writeOnly) const
 	return r;
 }
 
-void VoxelScene::LockScene()
+void VoxelChunk::LockScene()
 {
 	glUnmapBuffer(GL_ARRAY_BUFFER);
 }
 
-vec3* VoxelScene::UnlockColormap(bool writeOnly) const
+vec3* VoxelChunk::UnlockColormap(bool writeOnly) const
 {
 	//glUnmapBuffer(GL_ARRAY_BUFFER);
 	glBindBuffer(GL_ARRAY_BUFFER, cb);
@@ -135,32 +135,32 @@ vec3* VoxelScene::UnlockColormap(bool writeOnly) const
 	return r;
 }
 
-void VoxelScene::LockColormap()
+void VoxelChunk::LockColormap()
 {
 	glUnmapBuffer(GL_ARRAY_BUFFER);
 }
 
-void VoxelScene::SetPosition(mat4* mModelMatrix, glm::vec3 position)
+void VoxelChunk::SetPosition(mat4* mModelMatrix, glm::vec3 position)
 {
 	*mModelMatrix *= translate(position);
 }
 
-void VoxelScene::SetScale(mat4* mModelMatrix, glm::vec3 scale)
+void VoxelChunk::SetScale(mat4* mModelMatrix, glm::vec3 scale)
 {
 	*mModelMatrix *= glm::scale(scale);
 }
 
-void VoxelScene::SetIdentity(mat4* mModelMatrix)
+void VoxelChunk::SetIdentity(mat4* mModelMatrix)
 {
 	*mModelMatrix = mat4(1.f);
 }
 
-void VoxelScene::SetColor(vec3 *_color, glm::vec3 color)
+void VoxelChunk::SetColor(vec3 *_color, glm::vec3 color)
 {
 	*_color = color;
 }
 
-void VoxelScene::Plot(mat4* mModelMatrix, glm::vec3 position, glm::vec3 scale)
+void VoxelChunk::Plot(mat4* mModelMatrix, glm::vec3 position, glm::vec3 scale)
 {
 	SetIdentity(mModelMatrix);
 	*mModelMatrix = translate(position * (scale * vec3(2.f))) * glm::scale(scale);

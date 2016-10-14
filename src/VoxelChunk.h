@@ -14,8 +14,8 @@
 
 #include "defs.hpp"
 #include "voxel.hpp"
-#include "RaymarchShader.h"
 #include "Camera.h"
+#include "BaseShader.h"
 
 class System;
 
@@ -24,25 +24,22 @@ class System;
  * \brief Batch voxel renderer
  * 
  * This class handles uploading an array of pre-defined voxels to the GPU.
- * It also takes care of updating your shader program with updated uniforms.
+ * It also takes care of updating our shader program with updated uniforms.
  * Renderer binds buffers and calls instanced draw on GPU.
  * There are also static method helpers for manipulating unlocked voxels.
- * 
- * \note Class should not access System object, it should access shader and camera objects directly.
  */
-class VoxelScene
+class VoxelChunk
 {
 public:
-	explicit VoxelScene(Camera* camera);
+	explicit VoxelChunk(Camera* camera);
 
 	/** 
 	 * \brief Upload voxel array to the GPU.
 	 * \param voxelvec Pointer to an array of voxels.
-	 * \param voxelCount Number of voxels passed to the GPU.
 	 *  
 	 * Method generates new buffers and uploads a sequence of voxel properties to the GPU.
 	 */
-	void UploadVoxels(const std::vector<Voxel> voxelvec, size_t voxelCount);
+	void UploadVoxels(const std::vector<Voxel>& voxelvec);
 
 	/** 
 	 * \brief Invoke render commands.
@@ -52,8 +49,8 @@ public:
 	 */
 	void Render() const;
 
-	size_t GetVoxelCount() const { return mVoxelCount; }
-	
+	auto GetVoxelCount() const -> size_t const { return mVoxelCount; }
+
 	/**
 	 * \brief Unlocks an access to the uploaded voxel array properties.
 	 * \param writeOnly (Optional) Decides whether to ask the GPU for copying video memory to system, therefore allowing us to read data from GPU.
