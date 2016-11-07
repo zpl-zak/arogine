@@ -47,9 +47,16 @@ int main(void)
 	auto windoww = 0, windowh = 0;
 	glfwGetWindowSize(sys.GetWindow()->GetWindow(), &windoww, &windowh);
 
-	auto pixels = VoxelImage::DownloadImage(size, "doom.png.ari", pw, ph);
-	auto pixels2 = VoxelImage::DownloadImage(size2, "doom2.png.ari", pw2, ph2);
+//	auto pixels = VoxelImage::DownloadImage(size, "doom.png.ari", pw, ph);
+//	auto pixels2 = VoxelImage::DownloadImage(size2, "doom2.png.ari", pw2, ph2);
 
+	noise::module::Perlin pn;
+
+	pw = ph = 64;
+
+	Camera::speed = 50;
+
+	float sea_level = 0.f;
 	size_t k = 0, q = 0, l = 0;
 	auto m = size;
 	{
@@ -58,17 +65,36 @@ int main(void)
 		{
 			for (unsigned j = 0; j < ph; j++)
 			{
-				for (unsigned l = 0; l < 1; l++, q += 3)
+				for (unsigned l = 0; l < 64; l++, q += 3)
 				{
+					float rnd = rand() % 10;
 					Voxel v;
-					auto r = pixels.at(q);
-					auto g = pixels.at(q + 1);
-					auto b = pixels.at(q + 2);
 					//				//auto intensity = sqrtf(r * r + g * g + b * b);
-					v.Plot(vec3(i, l, j), vec3(.01f));
-					v.SetColor(vec3(r, g, b));
-					voxels.push_back(v);
+					auto col = pn.GetValue(i / 100.f, l / 100.f, j / 100.f) * 10;
+					col = round(col);
+					if (col < 3.f)
+					{
+						v.SetColor(vec3(0, 0, 1));
+						col = 2;
+					}
+					else if (col > 8.f)
+					{
+						v.SetColor(vec3(.8, .8, .8));
+					}
+					else
+					{
+						v.SetColor(vec3(0.05*rnd, 1, 0));
+					}
 					k++;
+					float x = i;// (i > 32) ? i + col : (i == 32) ? i : i - col;
+					float y = j;// (j > 32) ? j + col : (j == 32) ? j : j - col;
+					float z = l;// (l > 32) ? l + col : (l == 32) ? l : l - col;
+
+
+					
+					v.Plot(vec3(x, y, z), vec3(1.f));
+					voxels.push_back(v);
+					
 				}
 			}
 		}
@@ -90,7 +116,7 @@ int main(void)
 		}
 
 		sys.BeginFrame(deltaTime);
-		{
+		/*{
 			auto col = mainscene.UnlockColormap();
 			q = 0;
 			for (size_t i = 0; i < mainscene.GetVoxelCount(); i++ , q += 3)
@@ -110,7 +136,7 @@ int main(void)
 				col[i] = vec3(rf, gf, bf);
 			}
 			mainscene.LockColormap();
-		}
+		}*/
 		mainscene.Render();
 		//raym.Render();
 

@@ -27,11 +27,11 @@ public:
 	void SetAngle(glm::vec2 angle);
 	void HandleInput(GLFWwindow* window, float deltaTime);
 
+	static float speed, mouseSpeed;
 private:
 	glm::vec3 mPosition;
 	glm::vec2 mAngle;
 	glm::mat4 mViewMatrix, mProjMatrix;
 
 	static const glm::vec3 upVector;
-	static float speed, mouseSpeed;
 };

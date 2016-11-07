@@ -42,7 +42,7 @@ Window::Window()
 	glDepthFunc(GL_LESS);
 	glEnable(GL_CULL_FACE);
 
-	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
+	glClearColor(.8f, .75f, 1.f, 0.0f);
 }
 
 void Window::Update() const

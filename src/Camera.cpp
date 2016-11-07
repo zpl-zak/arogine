@@ -95,7 +95,7 @@ void Camera::HandleInput(GLFWwindow* window, float deltaTime)
 	}
 
 	mProjMatrix = glm::perspective(glm::radians(45.f),
-		static_cast<float>(w) / static_cast<float>(h), 0.01f, 100.f);
+		static_cast<float>(w) / static_cast<float>(h), 0.01f, 10000.f);
 
 	mViewMatrix = glm::lookAt(
 		mPosition,

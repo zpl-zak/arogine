@@ -79,7 +79,7 @@ void Voxel::BuildVoxelData()
 	if (mVAO == 0 || mVertexBuffer == 0)
 	{
 		Assimp::Importer Importer;
-		const aiScene* scene = Importer.ReadFile("voxel.obj", aiProcess_Triangulate | aiProcess_GenSmoothNormals | aiProcess_JoinIdenticalVertices);
+		const aiScene* scene = Importer.ReadFile("voxel.obj", aiProcess_Triangulate);
 
 		if(!scene)
 		{
@@ -120,13 +120,14 @@ void Voxel::BuildVoxelData()
 		glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * voxelData.size(), &voxelData[0], GL_STATIC_DRAW);
 
+		glGenBuffers(1, &mNormalBuffer);
+		glBindBuffer(GL_ARRAY_BUFFER, mNormalBuffer);
+		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * voxelData.size(), &voxelDataNormal[0], GL_STATIC_DRAW);
+
 		glGenBuffers(1, &mElementBuffer);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mElementBuffer);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * voxelIndices.size(), &voxelIndices[0], GL_STATIC_DRAW);
 
-		glGenBuffers(1, &mNormalBuffer);
-		glBindBuffer(GL_ARRAY_BUFFER, mNormalBuffer);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * voxelData.size(), &voxelData[0], GL_STATIC_DRAW);
 		printf("Voxel data has been sent to the GPU!\n");
 	}
 }
