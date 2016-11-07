@@ -6,6 +6,7 @@ A simple voxel renderer aimed for rendering static meshes, images or Minecraft-e
 * ![shape made of voxels](https://puu.sh/rxFa0/69f29a41da.jpg)
 * ![simple color plotting on 2D voxel grid](https://puu.sh/ryuYm/43baea141c.jpg)
 * ![cube world](http://i.imgur.com/txPlfWg.png)
+* ![simple islands](http://i.imgur.com/2Cr87pT.png)
 * 17MB GIF example showing color blend of voxels between 2 images. [voxel color blend](https://puu.sh/ryNl3/7879fc0b71.gif)
 
 ## Build instructions
