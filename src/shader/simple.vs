@@ -10,7 +10,7 @@ uniform mat4 V;
 uniform mat4 P;
 
 out vec3 voxcolor;
- out vec3 normal;
+out vec3 normal;
 out vec3 eyedir;
 out vec3 light;
 out vec3 lightcolor;

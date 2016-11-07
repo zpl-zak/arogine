@@ -39,7 +39,7 @@ public:
 	 *  
 	 * Method generates new buffers and uploads a sequence of voxel properties to the GPU.
 	 */
-	void UploadVoxels(const std::vector<Voxel>& voxelvec);
+	void UploadVoxels(const std::vector<Voxel>& voxelvec, int offset, int totalSize);
 
 	/** 
 	 * \brief Invoke render commands.

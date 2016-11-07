@@ -11,7 +11,7 @@ VoxelChunk::VoxelChunk(Camera* camera) : mVoxelCount(0)
 	mb = cb = 0;
 }
 
-void VoxelChunk::UploadVoxels(const std::vector<Voxel>& voxelvec)
+void VoxelChunk::UploadVoxels(const std::vector<Voxel>& voxelvec, int offset = 0, int totalSize = 0)
 {
 	if (mModelMatrices.size() > 0)
 	{
@@ -29,27 +29,30 @@ void VoxelChunk::UploadVoxels(const std::vector<Voxel>& voxelvec)
 		mModelColors.push_back(voxelvec.at(i).GetColor());
 	}
 
-	if(mb != 0)
+	if(mb == 0)
 	{
-		glDeleteBuffers(1, &mb);
+		glGenBuffers(1, &mb);
+		glBindBuffer(GL_ARRAY_BUFFER, mb);
+		glBufferData(GL_ARRAY_BUFFER, totalSize * sizeof(mat4), nullptr, GL_STATIC_DRAW);
+		mVoxelCount = totalSize;
 	}
 
-	glGenBuffers(1, &mb);
-	glBindBuffer(GL_ARRAY_BUFFER, mb);
-	
-	//glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * 16 * voxelCount, mModelMatrices, GL_STATIC_DRAW);
-	glBufferData(GL_ARRAY_BUFFER, voxelvec.size() * sizeof(mat4), &mModelMatrices[0][0][0], GL_STATIC_DRAW);
-
-	if (cb != 0)
 	{
-		glDeleteBuffers(1, &cb);
+		glBindBuffer(GL_ARRAY_BUFFER, mb);
+		glBufferSubData(GL_ARRAY_BUFFER, offset * sizeof(mat4), voxelvec.size() * sizeof(mat4), &mModelMatrices[0][0][0]);
 	}
 
-	glGenBuffers(1, &cb);
-	glBindBuffer(GL_ARRAY_BUFFER, cb);
-	glBufferData(GL_ARRAY_BUFFER, voxelvec.size() * sizeof(vec3), &mModelColors[0][0], GL_STATIC_DRAW);
+	if (cb == 0)
+	{
+		glGenBuffers(1, &cb);
+		glBindBuffer(GL_ARRAY_BUFFER, cb);
+		glBufferData(GL_ARRAY_BUFFER, totalSize * sizeof(vec3), nullptr, GL_STATIC_DRAW);
+	}
 
-	mVoxelCount = voxelvec.size();
+	{
+		glBindBuffer(GL_ARRAY_BUFFER, cb);
+		glBufferSubData(GL_ARRAY_BUFFER, offset * sizeof(vec3), voxelvec.size() * sizeof(vec3), &mModelColors[0][0]);
+	}
 
 	mModelMatrices.clear();
 	mModelMatrices.shrink_to_fit();

@@ -52,12 +52,12 @@ int main(void)
 
 	noise::module::Perlin pn;
 
-	pw = ph = 64;
+	pw = ph = 768;
 
 	Camera::speed = 50;
 
 	float sea_level = 0.f;
-	size_t k = 0, q = 0, l = 0;
+	size_t k = 0, q = 0, l = 0, cnt = 0;
 	auto m = size;
 	{
 		std::vector<Voxel> voxels;
@@ -65,7 +65,7 @@ int main(void)
 		{
 			for (unsigned j = 0; j < ph; j++)
 			{
-				for (unsigned l = 0; l < 64; l++, q += 3)
+				for (unsigned l = 0; l < 1; l++, q += 3)
 				{
 					float rnd = rand() % 10;
 					Voxel v;
@@ -87,18 +87,25 @@ int main(void)
 					}
 					k++;
 					float x = i;// (i > 32) ? i + col : (i == 32) ? i : i - col;
-					float y = j;// (j > 32) ? j + col : (j == 32) ? j : j - col;
-					float z = l;// (l > 32) ? l + col : (l == 32) ? l : l - col;
+					float y = l;// (j > 32) ? j + col : (j == 32) ? j : j - col;
+					float z = j;// (l > 32) ? l + col : (l == 32) ? l : l - col;
 
 
 					
-					v.Plot(vec3(x, y, z), vec3(1.f));
+					v.Plot(vec3(x, y-col, z), vec3(1.f));
 					voxels.push_back(v);
 					
+					if (k > 32)
+					{
+						mainscene.UploadVoxels(voxels, cnt, pw*ph);
+						cnt += voxels.size();
+						voxels.clear();
+						k = 0;
+					}
 				}
 			}
 		}
-		mainscene.UploadVoxels(voxels);
+		
 	}
 	
 	auto fmr = .1;
