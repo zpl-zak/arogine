@@ -15,6 +15,8 @@ Window::Window()
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE); // To make MacOS happy; should not be needed
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+  glfwWindowHint(GLFW_FLOATING, GL_TRUE);
+  glfwSwapInterval(1);
 
 	// Open a window and create its OpenGL context
 	mWindow = glfwCreateWindow(1024, 768, "Arogine", nullptr, nullptr);
@@ -37,6 +39,7 @@ Window::Window()
 
 	// Ensure we can capture the escape key being pressed below
 	glfwSetInputMode(mWindow, GLFW_STICKY_KEYS, GL_TRUE);
+  glfwSetInputMode(mWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);

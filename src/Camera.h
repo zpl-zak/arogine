@@ -32,6 +32,7 @@ private:
 	glm::vec3 mPosition;
 	glm::vec2 mAngle;
 	glm::mat4 mViewMatrix, mProjMatrix;
+  double mXpos, mYpos;
 
 	static const glm::vec3 upVector;
 };

@@ -38,7 +38,6 @@ void Camera::SetAngle(glm::vec2 angle)
 {
 	mAngle = angle;
 }
-
 void Camera::HandleInput(GLFWwindow* window, float deltaTime)
 {
 	//TODO(zaklaus): Move into Input class!
@@ -46,18 +45,20 @@ void Camera::HandleInput(GLFWwindow* window, float deltaTime)
 	double xpos, ypos;
 	int w, h;
 	glfwGetCursorPos(window, &xpos, &ypos);
-	glfwGetWindowSize(window, &w, &h);
-	glfwSetCursorPos(window, w / 2, h / 2);
+  glfwGetWindowSize(window, &w, &h);
 
 	if(firstMousePos)
 	{
-		xpos = w / 2;
-		ypos = h / 2;
 		firstMousePos = false;
+    mXpos = xpos;
+    mYpos = ypos;
 	}
 
-	mAngle[0] += mouseSpeed * deltaTime * float(w / 2 - xpos);
-	mAngle[1] -= mouseSpeed * deltaTime * float(h / 2 - ypos);
+	mAngle[0] += mouseSpeed * deltaTime * (mXpos - xpos);
+	mAngle[1] -= mouseSpeed * deltaTime * (mYpos - ypos);
+
+  mXpos = xpos;
+  mYpos = ypos;
 
 	if (mAngle[1] < 21.f)
 		mAngle[1] = 21.f;
